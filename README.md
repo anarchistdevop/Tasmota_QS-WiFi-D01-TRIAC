@@ -32,13 +32,14 @@ Reference #2 https://templates.blakadder.com/qs-wifi_D01_dimmer.html
    SerialSend6 can also be used with comma seperated decimal values as setup in the **rule 1** below. 
 
 4) For this device to work with the above template we need to set up rules to send the correct serial commands on power off/on and on the use of the dimmer  
-   the below rule works perfectly for my device.    
+   the below rule works perfectly for my device. ( Updated on 22 Sep 2021 to retain dimmer level after device restart. )    
    ```
-   rule1  
-	    on Dimmer#State do backlog scale1 %value%,1,100,16,255; event decdimmer; endon  
-	    on event#decdimmer do SerialSend6 255,85,%var1%,5,220,10 endon  
-	    on Power1#State=0 do SerialSend6 255,85,0,5,220,10 endon  
-	    on Power1#State=1 do SerialSend6 255,85,%var1%,5,220,10 endon  
+   rule1 
+      on Dimmer#State do backlog scale1 %value%,1,100,16,255; event decdimmer; endon
+      on Dimmer#Boot do backlog scale1 %value%,1,100,16,255; event decdimmer; endon
+      on event#decdimmer do SerialSend6 255,85,%var1%,5,220,10 endon
+      on Power1#State=0 do SerialSend6 255,85,0,5,220,10 endon 
+      on Power1#State=1 do SerialSend6 255,85,%var1%,5,220,10 endon  
    ```
    Remember to turn on the rule by running **_rule1 1_** in the console  
    **Note :** **_scale1 %value%,1,100,16,255;_** in the above rule, scales the dimmer input from a range of 1-100 received to a range of 1-255 required for the serialsend6 command to the device.  
