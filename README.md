@@ -50,4 +50,33 @@ Reference #2 https://templates.blakadder.com/qs-wifi_D01_dimmer.html
 Reference #3 https://tasmota.github.io/docs/Commands/  
 Reference #4 https://tasmota.github.io/docs/Rules/  
    
+
+**_Update ( 23 Sep 2021 )_**
+
+6) "Switch S" on the device can be used with a basic momentary push button switch to turn the device on and off in case of a wifi failure.  
+    For this to work GPIO13 needs to be set to "Button" instead of "Counter" in the Template OR Configuration.  
+    For some reason it does not work when GPIO13 is configured as a "switch", possibly a hardware limitation.  
+    
+   **Template {"NAME":"QS-WiFi-D01-TRIAC","GPIO":[0,3200,0,3232,0,0,0,0,0,32,416,0,0,1],"FLAG":0,"BASE":18}**
+
+   Run the below commands in the console to create and enable rule2 to handle the switch functions. 
+   
+   ```
+   Backlog ButtonTopic 0;  SetOption73 1; SetOption1 1
+   Rule2 1
+   Rule2
+      ON button1#state=10 DO power1 toggle ENDON
+      ON button1#state=11 DO power1 toggle ENDON
+      ON button1#state=12 DO power1 toggle ENDON
+      ON button1#state=13 DO power1 toggle ENDON
+      ON button1#state=14 DO power1 toggle ENDON
+      ON button1#state=3  DO power1 toggle ENDON
+   ```
+   This rule just toggles the power state on button press for now, It can be used along with backlog to restore the brigtness to full if needed.     
+   
+   replace "power1 toggle" with "backlog SerialSend6 255,85,255,5,220,10; power1 toggle" on all rule2 lines to restore to full brightness when using the switch. 
+   
+   I am looking for a way to handle the dimmer function from the same rule but that does not seem possible with the available commands at this time. 
+
+
    
